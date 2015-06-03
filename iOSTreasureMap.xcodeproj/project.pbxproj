@@ -36,6 +36,7 @@
 		C65461171AEE6DC10004D9BC /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C65461161AEE6DC10004D9BC /* SystemConfiguration.framework */; };
 		C6A87CE41B0110390005FB9C /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6A87CE31B0110390005FB9C /* MenuViewController.swift */; };
 		C6A87CE61B0110C70005FB9C /* ContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6A87CE51B0110C70005FB9C /* ContentViewController.swift */; };
+		C6E5E7381B1EFB6C00F3D368 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6E5E7371B1EFB6C00F3D368 /* Reachability.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +84,7 @@
 		C65461181AEE6E4C0004D9BC /* iOSTreasureMap-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iOSTreasureMap-Bridging-Header.h"; sourceTree = "<group>"; };
 		C6A87CE31B0110390005FB9C /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MenuViewController.swift; path = ../MenuViewController.swift; sourceTree = "<group>"; };
 		C6A87CE51B0110C70005FB9C /* ContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentViewController.swift; sourceTree = "<group>"; };
+		C6E5E7371B1EFB6C00F3D368 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +145,7 @@
 				C66B2B511B022B6E00DE2F70 /* Library */,
 				C65460DB1AEE6AE10004D9BC /* AppDelegate.swift */,
 				C65460DD1AEE6AE10004D9BC /* MapViewController.swift */,
+				C6E5E7371B1EFB6C00F3D368 /* Reachability.swift */,
 				C620FDCD1AF9580700CABF6D /* LocationController.swift */,
 				C620FDCB1AF8FA8A00CABF6D /* Location.swift */,
 				C65460DF1AEE6AE10004D9BC /* Main.storyboard */,
@@ -321,6 +324,7 @@
 				C61ED2331B02414500D9839B /* NavigationController.swift in Sources */,
 				C620FDCE1AF9580700CABF6D /* LocationController.swift in Sources */,
 				C64CF0EA1B02275700081A53 /* ENSwiftSideMenu.swift in Sources */,
+				C6E5E7381B1EFB6C00F3D368 /* Reachability.swift in Sources */,
 				1B81ACEA1B15FE00006C5C96 /* DetailViewController.swift in Sources */,
 				C6A87CE61B0110C70005FB9C /* ContentViewController.swift in Sources */,
 				C65460DC1AEE6AE10004D9BC /* AppDelegate.swift in Sources */,
