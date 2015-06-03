@@ -22,11 +22,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
     var radius : Double = 3000
 
     lazy var data = NSMutableData()
-    let locationEndpoint = NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!
+    let locationEndpoint = NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")
 
     let locationManager = CLLocationManager()
-    let locationController = LocationController(locationEndpoint: NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!, data: NSData(contentsOfURL: NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!)!)
+    var locationController : LocationController?
 
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -99,6 +101,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
     }
 
     override func viewWillAppear(animated: Bool) {
+//        (locationEndpoint: NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!, data: NSData(contentsOfURL: NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!)!)
+        
+        locationController = LocationController(locationEndpoint: locationEndpoint!, data: NSData(contentsOfURL: locationEndpoint!)!)
         startConnection()
 
     }
@@ -117,9 +122,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
     }
 
     func startConnection(){
-        let request = NSURLRequest(URL: locationEndpoint)
+        let request = NSURLRequest(URL: locationEndpoint!)
         let connection = NSURLConnection(request: request, delegate: self)
-        let data = NSData(contentsOfURL: locationEndpoint)
+        let data = NSData(contentsOfURL: locationEndpoint!)
 
         connection?.start()
     }
@@ -130,22 +135,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
 
     func connectionDidFinishLoading(connection: NSURLConnection!) {
         var err: NSError
-        let data = NSData(contentsOfURL: locationEndpoint)!
-        locationController.getLocations()
+        let data = NSData(contentsOfURL: locationEndpoint!)
+        locationController!.getLocations()
 
         var circleCenter = CLLocationCoordinate2DMake(marker.position.latitude, marker.position.longitude)
         var circleCenterLat = marker.position.latitude
         var circleCenterLng = marker.position.longitude
 
-        for(var x=0; x<locationController.locations.count; x++){
-            var locationLat = locationController.locations[x].coordinates!.valueForKey("lat") as! CLLocationDegrees
-            var locationLng = locationController.locations[x].coordinates!.valueForKey("lng") as! CLLocationDegrees
+        for(var x=0; x<locationController!.locations.count; x++){
+            var locationLat = locationController!.locations[x].coordinates!.valueForKey("lat") as! CLLocationDegrees
+            var locationLng = locationController!.locations[x].coordinates!.valueForKey("lng") as! CLLocationDegrees
             var locationPosition = CLLocationCoordinate2DMake(locationLat, locationLng)
-            var locationName = locationController.locations[x].details?.valueForKey("name") as! String
-            var locationDuration = locationController.locations[x].details?.valueForKey("duration") as! String
-            var locationCategory = locationController.locations[x].category?.valueForKey("name") as! String
+            var locationName = locationController!.locations[x].details?.valueForKey("name") as! String
+            var locationDuration = locationController!.locations[x].details?.valueForKey("duration") as! String
+            var locationCategory = locationController!.locations[x].category?.valueForKey("name") as! String
             var locationMarker = GMSMarker(position: locationPosition)
-            var pinString: String = locationController.locations[x].category?.valueForKey("imgUrl") as! String
+            var pinString: String = locationController!.locations[x].category?.valueForKey("imgUrl") as! String
             var pinUrl = NSURL(string: ("http://treasuremap-stage.herokuapp.com/" + pinString))
             var pinData = NSData(contentsOfURL: pinUrl!)
 
@@ -169,7 +174,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
             locationMarker.snippet = "Duration in Hours: \(locationDuration)" + "\n" +
             "Category: \(locationCategory)"
             locationMarker.icon = UIImage(data: pinData!, scale: 2)
-            locationMarker.accessibilityValue = locationController.locations[x].id
+            locationMarker.accessibilityValue = locationController!.locations[x].id
             locationMarker.map = viewMap
             }
         }
@@ -193,12 +198,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
         //                detailView.didTapPin = tappedPin!
         //                detailView.detailsFromRootView = locationController.getLocationDetails(tappedPin!.accessibilityValue!)
         //        }
-        if let detailView = segue.destinationViewController as? DetailViewController{
-            detailView.rootViewController = self
-            detailView.didTapPin = tappedPin!
-            detailView.detailsFromRootView = locationController.getLocationDetails(tappedPin!.accessibilityValue!)
-            println("its happening")
-        }
+//        if let detailView = segue.destinationViewController as? DetailViewController{
+//            detailView.rootViewController = self
+//            detailView.didTapPin = tappedPin!
+//            detailView.detailsFromRootView = locationController.getLocationDetails(tappedPin!.accessibilityValue!)
+//            println("its happening")
+//        }
     }
 
     @IBAction func toggleSideMenu(sender: AnyObject){
