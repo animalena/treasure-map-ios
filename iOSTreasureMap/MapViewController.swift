@@ -16,7 +16,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
     var selectedLocation: Location?
     @IBOutlet weak var toolbar: UINavigationItem!
     @IBOutlet weak var menuButton: UIBarButtonItem!
-    //var locationMarker: GMSMarker!
 
     var marker = GMSMarker()
     var radius : Double = 3000
@@ -101,10 +100,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
     }
 
     override func viewWillAppear(animated: Bool) {
-//        (locationEndpoint: NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!, data: NSData(contentsOfURL: NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!)!)
-        
-        locationController = LocationController(locationEndpoint: locationEndpoint!, data: NSData(contentsOfURL: locationEndpoint!)!)
-        startConnection()
+        if Reachability.isConnectedToNetwork() == true {
+            println("Internet connection OK")
+            locationController = LocationController(locationEndpoint: locationEndpoint!, data: NSData(contentsOfURL: locationEndpoint!)!)
+            startConnection()
+        } else {
+            var notification = UILocalNotification()
+            notification.alertBody = "There is a problem with the internet connection!"
+            notification.alertAction = "Use in Offline mode"
+            println("Internet connection FAILED")
+        }
+
 
     }
 
@@ -198,12 +204,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
         //                detailView.didTapPin = tappedPin!
         //                detailView.detailsFromRootView = locationController.getLocationDetails(tappedPin!.accessibilityValue!)
         //        }
-//        if let detailView = segue.destinationViewController as? DetailViewController{
-//            detailView.rootViewController = self
-//            detailView.didTapPin = tappedPin!
-//            detailView.detailsFromRootView = locationController.getLocationDetails(tappedPin!.accessibilityValue!)
-//            println("its happening")
-//        }
+        if let detailView = segue.destinationViewController as? DetailViewController{
+            detailView.rootViewController = self
+            detailView.didTapPin = tappedPin!
+            detailView.detailsFromRootView = locationController!.getLocationDetails(tappedPin!.accessibilityValue!)
+            println("its happening")
+        }
     }
 
     @IBAction func toggleSideMenu(sender: AnyObject){
