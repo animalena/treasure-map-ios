@@ -12,6 +12,7 @@
 		C61ED2331B02414500D9839B /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61ED2321B02414500D9839B /* NavigationController.swift */; };
 		C620FDCC1AF8FA8A00CABF6D /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = C620FDCB1AF8FA8A00CABF6D /* Location.swift */; };
 		C620FDCE1AF9580700CABF6D /* LocationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C620FDCD1AF9580700CABF6D /* LocationController.swift */; };
+		C63927871B207D3D00E466C9 /* DetailView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C63927861B207D3D00E466C9 /* DetailView.storyboard */; };
 		C64CF0EA1B02275700081A53 /* ENSwiftSideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C64CF0E91B02275700081A53 /* ENSwiftSideMenu.swift */; };
 		C64CF0EC1B0227B800081A53 /* ENSideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C64CF0EB1B0227B800081A53 /* ENSideMenuNavigationController.swift */; };
 		C65460DC1AEE6AE10004D9BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65460DB1AEE6AE10004D9BC /* AppDelegate.swift */; };
@@ -55,6 +56,7 @@
 		C61ED2321B02414500D9839B /* NavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		C620FDCB1AF8FA8A00CABF6D /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		C620FDCD1AF9580700CABF6D /* LocationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationController.swift; sourceTree = "<group>"; };
+		C63927861B207D3D00E466C9 /* DetailView.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = DetailView.storyboard; sourceTree = "<group>"; };
 		C64CF0E91B02275700081A53 /* ENSwiftSideMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ENSwiftSideMenu.swift; sourceTree = "<group>"; };
 		C64CF0EB1B0227B800081A53 /* ENSideMenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ENSideMenuNavigationController.swift; sourceTree = "<group>"; };
 		C65460D61AEE6AE10004D9BC /* iOSTreasureMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSTreasureMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -149,6 +151,7 @@
 				C620FDCD1AF9580700CABF6D /* LocationController.swift */,
 				C620FDCB1AF8FA8A00CABF6D /* Location.swift */,
 				C65460DF1AEE6AE10004D9BC /* Main.storyboard */,
+				C63927861B207D3D00E466C9 /* DetailView.storyboard */,
 				1B81ACE91B15FE00006C5C96 /* DetailViewController.swift */,
 				C61ED2321B02414500D9839B /* NavigationController.swift */,
 				C6A87CE51B0110C70005FB9C /* ContentViewController.swift */,
@@ -297,6 +300,7 @@
 			files = (
 				C65460E11AEE6AE10004D9BC /* Main.storyboard in Resources */,
 				C65460E61AEE6AE10004D9BC /* LaunchScreen.xib in Resources */,
+				C63927871B207D3D00E466C9 /* DetailView.storyboard in Resources */,
 				C65460E31AEE6AE10004D9BC /* Images.xcassets in Resources */,
 				1B30E96A1B1605D500E6875B /* burgerMenu.png in Resources */,
 				C65460FE1AEE6D060004D9BC /* GoogleMaps.bundle in Resources */,

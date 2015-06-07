@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //API Client-Key for Google Maps
         GMSServices.provideAPIKey("AIzaSyC49fkrQRd5yDgRszSHSga9KRfOmussA9g")
 //        application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: UIUserNotificationType.Sound |UIUserNotificationType.Alert |UIUserNotificationType.Badge, categories: nil)
-//        return true
+       return true
     }
     
     func applicationWillResignActive(application: UIApplication) {
