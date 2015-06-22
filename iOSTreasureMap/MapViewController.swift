@@ -38,6 +38,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         var buttonImg = UIImage(named: "burgerMenu_small")
         menuButton.setBackButtonBackgroundImage(buttonImg, forState: .Normal, barMetrics: .Default)
 
+        
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization()
@@ -53,8 +54,10 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         viewMap.animateToZoom(12)
         viewMap.setMinZoom(10, maxZoom: 15)
 
-        self.view = viewMap
+        //self.view.addSubview(viewMap)
+        viewMap.delegate = self
 
+        self.view = viewMap
         drawCircle()
         // current location marker
         marker.position = camera.target
@@ -73,12 +76,25 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
 //        uebergangsPin.accessibilityValue = "123"
 //        uebergangsPin.icon = GMSMarker.markerImageWithColor(UIColor.redColor())
 //        uebergangsPin.map = viewMap
-        self.viewMap.delegate = self
-
-
 
     }
     
+    /**
+    - (MKAnnotationView *)mapView:(MKMapView *)map viewForAnnotation:(id <MKAnnotation>)annotation
+    {
+    static NSString *AnnotationViewID = @"annotationViewID";
+    
+    // Check if its the annotation for displaying the current position
+    if ([annotation isKindOfClass:[MKUserLocation class]])
+    {
+    return nil;
+    }
+    
+    // Your annotation code
+    
+    }
+
+    **/
     
     func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
         CLGeocoder().reverseGeocodeLocation(manager.location, completionHandler: { (placemarks, error) -> Void in
@@ -101,7 +117,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
             }
         })
     }
-
+    
+    
     func displayLocationInfo(placemark: CLPlacemark)
     {
         self.locationManager.stopUpdatingLocation()
@@ -117,6 +134,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     }
 
     override func viewWillAppear(animated: Bool) {
+
         if Reachability.isConnectedToNetwork() == true {
             println("Internet connection OK")
             locationController = LocationController(locationEndpoint: locationEndpoint!, data: NSData(contentsOfURL: locationEndpoint!)!)
@@ -205,7 +223,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     
     func didTapMyLocationButtonForMapView(mapView: GMSMapView!) -> Bool {
         //by tap auf myLocation Button: zoom, Location mittig
-        return true
+        //muss false sein, ansonsten funktioniert nur Detail View ODER current location
+        return false
     }
     
     
@@ -213,12 +232,19 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     func mapView(mapView: GMSMapView!, didTapInfoWindowOfMarker marker: GMSMarker!) {
         //viewMap.delegate = self
         tappedPin = marker
+        
+        //erstellt eine Instanz des entsprechenden Storyboards
         let detailStoryboard = UIStoryboard(name: "DetailView", bundle: nil)
+        //innerhalb dieses Storyboards wird der View Controller instanziiert (dem View Controller im Storyboard eine ID geben!)
         let detailView = detailStoryboard.instantiateViewControllerWithIdentifier("DetailViewID") as! DetailViewController
+        //Wie soll der nächste View erscheinen?
         detailView.modalTransitionStyle = UIModalTransitionStyle.CoverVertical
+        //so können Informationen an den View weitergegeben werden
+        //(didTapPin ist eine globale Variable im Detail View Controller)
         detailView.didTapPin = tappedPin!
         detailView.detailsFromRootView = locationController?.getLocationDetails(tappedPin!.accessibilityValue!)
-            self.presentViewController(detailView, animated: true, completion: nil)
+        //der eigentliche Aufruf des View Controllers
+        self.presentViewController(detailView, animated: true, completion: nil)
     }
 
 

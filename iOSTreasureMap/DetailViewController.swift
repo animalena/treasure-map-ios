@@ -10,7 +10,7 @@
 
 import Foundation
 
-class DetailViewController: UIViewController, UIScrollViewDelegate{
+class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate{
 
     //navigation stuff
     @IBOutlet weak var pageScrollView: UIScrollView!
@@ -30,7 +30,9 @@ class DetailViewController: UIViewController, UIScrollViewDelegate{
     var pageImages: [UIImage] = []
     var pageViews: [UIImageView?] = []
     
-    
+    //upload photos
+    @IBOutlet weak var uploadPhotoButton: UIButton!
+    var imagePicker: UIImagePickerController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,7 +42,7 @@ class DetailViewController: UIViewController, UIScrollViewDelegate{
         var zip = detailsFromRootView.address?.valueForKey("zipcode") as! String
         var city = detailsFromRootView.address?.valueForKey("city") as! String
         var category = detailsFromRootView.category!.valueForKey("name") as! String
-        var description = detailsFromRootView.category?.valueForKey("description") as? String
+        var description = detailsFromRootView.details?.valueForKey("description") as? String
         
         //toolbar.topItem?.title = detailsFromRootView.details!.valueForKey("name") as? String
         
@@ -49,16 +51,15 @@ class DetailViewController: UIViewController, UIScrollViewDelegate{
         
         //locationDescription.font = UIFont(name: "STHeitiTC-Light", size: 12)
         locationDescription.text = "\(category)" + "\n" + "\(description)"
+        locationDescription.adjustsFontSizeToFitWidth = true
         
-        //setting up random images for testing
-        var imageURL = NSURL(string: "https://s3-eu5.ixquick.com/cgi-bin/serveimage?url=http://media-cdn.tripadvisor.com/media/photo-s/00/12/08/be/brandenburg-gate-at-night.jpg&sp=19b6e0cf2e1e8ecc90cdbf09ffc8d104")
-        var scndImageURL = NSURL(string: "https://s3-eu5.ixquick.com/cgi-bin/serveimage?url=http://www.spreephoto.de/wp-content/uploads/2011/04/berlin-skyline.jpg&sp=2919ef09d0d23d3249f2ce4366bdfffb")
-        var imageData = NSData(contentsOfURL: imageURL!)
-        var scndImageData = NSData(contentsOfURL: scndImageURL!)
-        var firstImage = UIImage(data: imageData!, scale: 5)
-        var secondImage = UIImage(data: scndImageData!, scale: 5)
-        pageImages.append(firstImage!)
-        pageImages.append(secondImage!)
+        var photos = detailsFromRootView.details!.valueForKey("pictures") as! NSArray
+        for(var x=0; x<photos.count; x++){
+            var photoUrl = NSURL(string: photos[x] as! String)
+            var photoData = NSData(contentsOfURL: photoUrl!)
+            var photo = UIImage(data: photoData!, scale: 5)
+            pageImages.append(photo!)
+        }
 
         //setting up Page Control
         let pageCount = pageImages.count
@@ -82,8 +83,6 @@ class DetailViewController: UIViewController, UIScrollViewDelegate{
         
     }
     
-    
-    
     func scrollViewDidScroll(scrollView: UIScrollView) {
         showVisiblePagesOnController()
     }
@@ -93,6 +92,21 @@ class DetailViewController: UIViewController, UIScrollViewDelegate{
     }
     
     @IBAction func uploadPhotos(sender: UIButton) {
+        imagePicker = UIImagePickerController()
+        imagePicker?.delegate = self
+        imagePicker?.sourceType = .Camera
+        
+        presentViewController(imagePicker!, animated: true, completion: nil)
+        
+    }
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
+        imagePicker?.dismissViewControllerAnimated(true, completion: nil)
+        let detailStoryboard = UIStoryboard(name: "DetailView", bundle: nil)
+        let photoView = detailStoryboard.instantiateViewControllerWithIdentifier("photoTaken") as! ImageViewController
+        photoView.imageView.image = info[UIImagePickerControllerOriginalImage] as? UIImage
+        self.presentViewController(photoView, animated: true, completion: nil)
+        
     }
     
     func showVisiblePagesOnController(){

@@ -8,6 +8,7 @@
         <scene sceneID="2K2-t7-JwC">
             <objects>
                 <navigationController storyboardIdentifier="NavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="dC6-oa-kbQ" customClass="NavigationController" customModule="iOSTreasureMap" customModuleProvider="target" sceneMemberID="viewController">
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="MGt-Ui-8NB">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -56,7 +57,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="460" y="169"/>
+            <point key="canvasLocation" x="476.5" y="168.5"/>
         </scene>
         <!--Content View Controller-->
         <scene sceneID="Tad-ab-jiC">
@@ -74,7 +75,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="30k-RF-YYD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1178" y="169"/>
+            <point key="canvasLocation" x="1434" y="31"/>
         </scene>
     </scenes>
     <resources>
