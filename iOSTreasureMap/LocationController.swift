@@ -14,9 +14,10 @@ class LocationController: NSObject{
     func getLocations() -> [Location]?{
         var json: NSArray = (NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: nil) as! NSArray)
         var addressDict = [String: String]()
-        var detailDict = [String: String]()
+        var detailDict = [String: AnyObject]()
         var categoryDict = [String: String]()
         var coordinatesDict = [String: Float]()
+        var pictureArray = [String]()
         var id = String()
         
         if let parsed = json as? NSArray{
@@ -64,12 +65,12 @@ class LocationController: NSObject{
                         if let name = details["name"] as? String{
                             detailDict["name"] = name
                         }
-                        if let pictures = details["pictures"] as? String{
+                        //später bei mehreren Fotos zu NSArray aendern
+                        if let pictures = details["pictures"] as? NSArray{
                             detailDict["pictures"] = pictures
                         }
                     }
-                    
-                    
+
                 }
                 var newLocation = Location(address: addressDict, coordinates: coordinatesDict, details: detailDict, category: categoryDict, id: id)
                 locations.append(newLocation)

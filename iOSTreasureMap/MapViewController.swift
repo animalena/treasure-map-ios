@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MapViewController: UIViewController, CLLocationManagerDelegate{
+class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManagerDelegate{
 
     //@IBOutlet weak var viewMap: GMSMapView!
     var viewMap: GMSMapView!
@@ -16,23 +16,29 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
     var selectedLocation: Location?
     @IBOutlet weak var toolbar: UINavigationItem!
     @IBOutlet weak var menuButton: UIBarButtonItem!
-    //var locationMarker: GMSMarker!
 
-    var marker = GMSMarker()
+
+
     var radius : Double = 3000
+    var marker = GMSMarker()
 
     lazy var data = NSMutableData()
-    let locationEndpoint = NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!
+    let locationEndpoint = NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")
 
     let locationManager = CLLocationManager()
-    let locationController = LocationController(locationEndpoint: NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!, data: NSData(contentsOfURL: NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!)!)
+    var locationController : LocationController?
 
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+
+        
         var buttonImg = UIImage(named: "burgerMenu_small")
         menuButton.setBackButtonBackgroundImage(buttonImg, forState: .Normal, barMetrics: .Default)
 
+        
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization()
@@ -48,6 +54,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
         viewMap.animateToZoom(12)
         viewMap.setMinZoom(10, maxZoom: 15)
 
+        //self.view.addSubview(viewMap)
+        viewMap.delegate = self
+
+        self.view = viewMap
+        drawCircle()
         // current location marker
         marker.position = camera.target
         marker.snippet = "This is my current location"
@@ -55,13 +66,36 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
         marker.icon = GMSMarker.markerImageWithColor(UIColor.greenColor())
         marker.map = viewMap
 
-        //viewMap.delegate = self
-        self.view = viewMap
 
-        drawCircle()
+//        let loc = CLLocationCoordinate2D(latitude: 52.5002944, longitude: 13.3107046)
+//        let uebergangsPin = GMSMarker(position: loc)
+//        var marker = GMSMarker(position: loc)
+//        uebergangsPin.title = "Location: testMarker"
+//        uebergangsPin.snippet = "Duration in Hours: locationDuration" + "\n" +
+//        "Category: locationCategory"
+//        uebergangsPin.accessibilityValue = "123"
+//        uebergangsPin.icon = GMSMarker.markerImageWithColor(UIColor.redColor())
+//        uebergangsPin.map = viewMap
 
     }
+    
+    /**
+    - (MKAnnotationView *)mapView:(MKMapView *)map viewForAnnotation:(id <MKAnnotation>)annotation
+    {
+    static NSString *AnnotationViewID = @"annotationViewID";
+    
+    // Check if its the annotation for displaying the current position
+    if ([annotation isKindOfClass:[MKUserLocation class]])
+    {
+    return nil;
+    }
+    
+    // Your annotation code
+    
+    }
 
+    **/
+    
     func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
         CLGeocoder().reverseGeocodeLocation(manager.location, completionHandler: { (placemarks, error) -> Void in
 
@@ -76,14 +110,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
                 let location = self.locationManager.location
                 var latitude: Double = location.coordinate.latitude
                 var longitude: Double = location.coordinate.longitude
-                println("current latitude :: \(latitude)")
-                println("current longitude :: \(longitude)")
+//                println("current latitude :: \(latitude)")
+//                println("current longitude :: \(longitude)")
 
                 let currLocation = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
             }
         })
     }
-
+    
+    
     func displayLocationInfo(placemark: CLPlacemark)
     {
         self.locationManager.stopUpdatingLocation()
@@ -99,7 +134,19 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
     }
 
     override func viewWillAppear(animated: Bool) {
-        startConnection()
+
+        if Reachability.isConnectedToNetwork() == true {
+            println("Internet connection OK")
+            locationController = LocationController(locationEndpoint: locationEndpoint!, data: NSData(contentsOfURL: locationEndpoint!)!)
+            startConnection()
+            
+        } else {
+            var notification = UILocalNotification()
+            notification.alertBody = "There is a problem with the internet connection!"
+            notification.alertAction = "Use in Offline mode"
+            println("Internet connection FAILED")
+        }
+
 
     }
 
@@ -113,14 +160,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
         var circle = GMSCircle(position: circleCenter, radius: radius)
         circle.strokeColor = UIColor.blueColor()
         circle.fillColor = UIColor(red: 0, green: 0, blue: 0.5, alpha: 0.2)
-        circle.map = viewMap;
+        //circle.map = viewMap;
     }
 
     func startConnection(){
-        let request = NSURLRequest(URL: locationEndpoint)
+        let request = NSURLRequest(URL: locationEndpoint!)
         let connection = NSURLConnection(request: request, delegate: self)
-        let data = NSData(contentsOfURL: locationEndpoint)
-
+        let data = NSData(contentsOfURL: locationEndpoint!)
         connection?.start()
     }
 
@@ -130,22 +176,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
 
     func connectionDidFinishLoading(connection: NSURLConnection!) {
         var err: NSError
-        let data = NSData(contentsOfURL: locationEndpoint)!
-        locationController.getLocations()
+        let data = NSData(contentsOfURL: locationEndpoint!)
+        locationController!.getLocations()
 
         var circleCenter = CLLocationCoordinate2DMake(marker.position.latitude, marker.position.longitude)
         var circleCenterLat = marker.position.latitude
         var circleCenterLng = marker.position.longitude
 
-        for(var x=0; x<locationController.locations.count; x++){
-            var locationLat = locationController.locations[x].coordinates!.valueForKey("lat") as! CLLocationDegrees
-            var locationLng = locationController.locations[x].coordinates!.valueForKey("lng") as! CLLocationDegrees
+        for(var x=0; x<locationController!.locations.count; x++){
+            var locationLat = locationController!.locations[x].coordinates!.valueForKey("lat") as! CLLocationDegrees
+            var locationLng = locationController!.locations[x].coordinates!.valueForKey("lng") as! CLLocationDegrees
             var locationPosition = CLLocationCoordinate2DMake(locationLat, locationLng)
-            var locationName = locationController.locations[x].details?.valueForKey("name") as! String
-            var locationDuration = locationController.locations[x].details?.valueForKey("duration") as! String
-            var locationCategory = locationController.locations[x].category?.valueForKey("name") as! String
+            var locationName = locationController!.locations[x].details?.valueForKey("name") as! String
+            var locationDuration = locationController!.locations[x].details?.valueForKey("duration") as! String
+            var locationCategory = locationController!.locations[x].category?.valueForKey("name") as! String
             var locationMarker = GMSMarker(position: locationPosition)
-            var pinString: String = locationController.locations[x].category?.valueForKey("imgUrl") as! String
+            var pinString: String = locationController!.locations[x].category?.valueForKey("imgUrl") as! String
             var pinUrl = NSURL(string: ("http://treasuremap-stage.herokuapp.com/" + pinString))
             var pinData = NSData(contentsOfURL: pinUrl!)
 
@@ -169,7 +215,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
             locationMarker.snippet = "Duration in Hours: \(locationDuration)" + "\n" +
             "Category: \(locationCategory)"
             locationMarker.icon = UIImage(data: pinData!, scale: 2)
-            locationMarker.accessibilityValue = locationController.locations[x].id
+            locationMarker.accessibilityValue = locationController?.locations[x].id
             locationMarker.map = viewMap
             }
         }
@@ -177,29 +223,30 @@ class MapViewController: UIViewController, CLLocationManagerDelegate{
     
     func didTapMyLocationButtonForMapView(mapView: GMSMapView!) -> Bool {
         //by tap auf myLocation Button: zoom, Location mittig
-        return true
+        //muss false sein, ansonsten funktioniert nur Detail View ODER current location
+        return false
     }
+    
     
     //bei tap auf Infofenster wird der Segue "tappedPin" ausgelöst: neues Fenster öffnet sich
     func mapView(mapView: GMSMapView!, didTapInfoWindowOfMarker marker: GMSMarker!) {
+        //viewMap.delegate = self
         tappedPin = marker
-        self.performSegueWithIdentifier("tappedPin", sender: self)
         
+        //erstellt eine Instanz des entsprechenden Storyboards
+        let detailStoryboard = UIStoryboard(name: "DetailView", bundle: nil)
+        //innerhalb dieses Storyboards wird der View Controller instanziiert (dem View Controller im Storyboard eine ID geben!)
+        let detailView = detailStoryboard.instantiateViewControllerWithIdentifier("DetailViewID") as! DetailViewController
+        //Wie soll der nächste View erscheinen?
+        detailView.modalTransitionStyle = UIModalTransitionStyle.CoverVertical
+        //so können Informationen an den View weitergegeben werden
+        //(didTapPin ist eine globale Variable im Detail View Controller)
+        detailView.didTapPin = tappedPin!
+        detailView.detailsFromRootView = locationController?.getLocationDetails(tappedPin!.accessibilityValue!)
+        //der eigentliche Aufruf des View Controllers
+        self.presentViewController(detailView, animated: true, completion: nil)
     }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        //        if(segue.identifier == "tappedPin"){
-        //               let detailView = segue.destinationViewController as! DetailViewController
-        //                detailView.didTapPin = tappedPin!
-        //                detailView.detailsFromRootView = locationController.getLocationDetails(tappedPin!.accessibilityValue!)
-        //        }
-        if let detailView = segue.destinationViewController as? DetailViewController{
-            detailView.rootViewController = self
-            detailView.didTapPin = tappedPin!
-            detailView.detailsFromRootView = locationController.getLocationDetails(tappedPin!.accessibilityValue!)
-            println("its happening")
-        }
-    }
+
 
     @IBAction func toggleSideMenu(sender: AnyObject){
         toggleSideMenuView()

@@ -12,18 +12,17 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
-    
+    let cognitoAccountId = "treasure-map"
+    let cognitoIdentityPoolId = "xxxxxxxxxxxxxxxxx"
+   //let cognitoUnauthRoleArn = "xxxxxxxxxxxxxxxxx"
+    let cognitoAuthRoleArn = "xxxxxxxxxxxxxxxxx"
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         //API Client-Key for Google Maps
         GMSServices.provideAPIKey("AIzaSyC49fkrQRd5yDgRszSHSga9KRfOmussA9g")
-        //        let locationEndpoint = NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")!
-        //        let data = NSData(contentsOfURL: locationEndpoint)!
-        //let locationController = LocationController(locationEndpoint: locationEndpoint, data: data)
-        //locationController.getLocations()
-        
-        return true
+        // Override point for customization after application launch.
+            return true
     }
     
     func applicationWillResignActive(application: UIApplication) {
