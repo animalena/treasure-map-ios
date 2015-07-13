@@ -12,14 +12,41 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
-    
+    let cognitoAccountId = "treasure-map"
+    let cognitoIdentityPoolId = "eu-west-1:5f5f3ce2-9d1e-4c70-ada7-0ebcfc08c16c"
+   //let cognitoUnauthRoleArn = "xxxxxxxxxxxxxxxxx"
+    let cognitoAuthRoleArn = "xxxxxxxxxxxxxxxxx"
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         //API Client-Key for Google Maps
         GMSServices.provideAPIKey("AIzaSyC49fkrQRd5yDgRszSHSga9KRfOmussA9g")
-//        application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: UIUserNotificationType.Sound |UIUserNotificationType.Alert |UIUserNotificationType.Badge, categories: nil)
-//        return true
+        
+        //call AWS Services.
+        //Code from https://docs.aws.amazon.com/mobile/sdkforios/developerguide/setup.html#
+        let credentialsProvider = AWSCognitoCredentialsProvider(
+            regionType: AWSRegionType.EUWest1, identityPoolId: cognitoIdentityPoolId)
+        
+        let defaultServiceConfiguration = AWSServiceConfiguration(
+            region: AWSRegionType.EUWest1, credentialsProvider: credentialsProvider)
+        AWSServiceManager.defaultServiceManager().defaultServiceConfiguration = defaultServiceConfiguration
+        
+        
+
+//        AWSServiceManager.defaultServiceManager().defaultServiceConfiguration = defaultServiceConfiguration
+//        let dynamoDB = AWSDynamoDB.defaultDynamoDB()
+//        let listTableInput = AWSDynamoDBListTablesInput()
+//        dynamoDB.listTables(listTableInput).continueWithBlock{ (task: AWSTask!) -> AnyObject! in
+//            let listTablesOutput = task.result as? AWSDynamoDBListTablesOutput
+//            
+//            for tableName : AnyObject in listTablesOutput?.tableNames {
+//                println("\(tableName)")
+//            }
+//            
+//            return nil
+//        }
+        // Override point for customization after application launch.
+            return true
     }
     
     func applicationWillResignActive(application: UIApplication) {

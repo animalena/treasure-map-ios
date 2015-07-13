@@ -8,11 +8,13 @@
 
 import Foundation
 
-struct Location{
+//cannot be a struct because we need it to conform to AnyObject to enable writing
+class Location{
     
     let address : NSDictionary?
     let coordinates: NSDictionary?
-    let details: NSDictionary?
+    //    var details: NSMutableDictionary?
+    var details: NSDictionary?
     let category: NSDictionary?
     let id : String?
     
