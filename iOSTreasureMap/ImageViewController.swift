@@ -27,9 +27,6 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate{
     
     var uploadRequests = Array<AWSS3TransferManagerUploadRequest?>()
     var uploadFileURLs = Array<NSURL?>()
-    var downloadRequests = Array<AWSS3TransferManagerDownloadRequest?>()
-    var downloadFileURLs = Array<NSURL?>()
-    
     
     var location: Location!
     var photoFromRootView: UIImage!

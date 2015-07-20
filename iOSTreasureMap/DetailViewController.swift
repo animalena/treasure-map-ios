@@ -30,16 +30,21 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
     @IBOutlet weak var pageControl: UIPageControl!
     var pageImages: [UIImage] = []
     var pageViews: [UIImageView?] = []
+    var currentPage: Int?
+    var index = 0
     
     //upload photos
     @IBOutlet weak var uploadPhotoButton: UIButton!
     var takePhoto:  UIImagePickerController?
     var pickImage: UIImagePickerController?
     var pickedImage: UIImage?
-    //var imageViewController = ImageViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        uploadPhotoButton.titleLabel?.text = "Upload Photos"
+        uploadPhotoButton.titleLabel?.textColor = UIColor(red: 255, green: 255, blue: 255, alpha: 1)
+        
         self.navigationItem.titleView?.center
         self.detailScrollView.contentSize = CGSizeMake(self.view.frame.size.width,self.view.frame.size.height)
         self.detailScrollView.scrollEnabled = true
@@ -61,13 +66,12 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
         
         if let photos = detailsFromRootView.details?.valueForKey("pictures") as? NSArray{
             for(var x = 0; x<photos.count; x++){
-                var photoUrl = NSURL(string: (photos[x] as! String))
-                var data = NSData(contentsOfURL: photoUrl!, options: nil, error: NSErrorPointer())
-                var photo = UIImage(data: data!, scale: 5)
-                pageImages.append(photo!)
-                //show the first photo again
-                if(x == photos.count){
-                    x = 0
+                if let photoUrl = NSURL(string: (photos[x] as! String)){
+                    if let data = NSData(contentsOfURL: photoUrl, options: nil, error: NSErrorPointer()){
+                        var photo = UIImage(data: data, scale: 5)
+                        pageImages.append(photo!)
+                        //show the first photo again
+                    }
                 }
             }
         }
@@ -98,7 +102,8 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
     }
     
     @IBAction func backButtonPressed(sender: UIBarButtonItem) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismissViewControllerAnimated(false, completion: nil)
+    
     }
     
     
@@ -133,47 +138,32 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
     
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
+        let detailStoryboard = UIStoryboard(name: "DetailView", bundle: nil)
+        let imageViewController = detailStoryboard.instantiateViewControllerWithIdentifier("photoTaken") as! ImageViewController
+        
         if let picker = pickImage{
             pickImage!.dismissViewControllerAnimated(true, completion: nil)
-            let detailStoryboard = UIStoryboard(name: "DetailView", bundle: nil)
-            let imageViewController = detailStoryboard.instantiateViewControllerWithIdentifier("photoTaken") as! ImageViewController
             imageViewController.photoFromRootView = info[UIImagePickerControllerOriginalImage] as? UIImage
             imageViewController.mediaTypeFromRootView = info[UIImagePickerControllerMediaType] as? NSString
             imageViewController.photoData = info
             imageViewController.id = detailsFromRootView.id!
             imageViewController.location = detailsFromRootView!
             imageViewController.rootViewController = self
-            
-            
-            // photoView.imageView.image = info[UIImagePickerControllerOriginalImage] as? UIImage
             self.presentViewController(imageViewController, animated: true, completion: nil)
         }
         
-        //        if let picker =  info[UIImagePickerControllerOriginalImage] as? UIImage {
-        //            imageView.contentMode = .ScaleAspectFit
-        //            imageView.image = pickedImage
-        //        }
+        if let picker = takePhoto{
+            takePhoto!.dismissViewControllerAnimated(true, completion: nil)
+            imageViewController.photoFromRootView = info[UIImagePickerControllerOriginalImage] as? UIImage
+            imageViewController.mediaTypeFromRootView = info[UIImagePickerControllerMediaType] as? NSString
+            imageViewController.photoData = info
+            imageViewController.id = detailsFromRootView.id!
+            imageViewController.location = detailsFromRootView!
+            imageViewController.rootViewController = self
+            self.presentViewController(imageViewController, animated: true, completion: nil)
+        }
     }
-    
-    //    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
-    //        println("didFinishPickingMedia")
-    //
-    //        let photo =  info[UIImagePickerControllerOriginalImage] as? UIImage
-    //        println("photo: \(photo)")
-    //        imageViewController.photoFromRootView = photo
-    //        self.presentViewController(imageViewController, animated: true, completion: nil)
-    //        println("present imageViewController")
-    //
-    ////        imageViewController.imageView?.image = photo
-    ////        imageViewController.imageView?.contentMode = .ScaleAspectFit
-    //
-    //
-    //
-    //        //self.dismissViewControllerAnimated(true, completion: nil)
-    //
-    //    }
-    
-    
+  
     func showVisiblePagesOnController(){
         // First, determine which page is currently visible
         let pageWidth = imageScrollView.frame.size.width
@@ -187,7 +177,7 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
         let lastPage = page + 1
         
         // Purge anything before the first page
-        for var index = 0; index < firstPage; ++index {
+        for index; index < firstPage; ++index {
             purgePage(index)
         }
         
@@ -208,25 +198,28 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
     locations with lots of images
     **/
     func loadSinglePage(page: Int){
-        //if page is out of range, do nothing
-        if page < 0 || page >= pageImages.count{
+        if page < 0 || page >= pageImages.count {
+            // If it's outside the range of what you have to display, then do nothing
             return
         }
-        //if the page view has not been loaded, load it
+        
+        // Load an individual page, first checking if you've already loaded it
         if let pageView = pageViews[page] {
-        }
-        else{
-            //set size of the page to the same size as imageScrollView
+            // Do nothing. The view is already loaded.
+        } else {
             var frame = imageScrollView.bounds
             frame.origin.x = frame.size.width * CGFloat(page)
             frame.origin.y = 0.0
+            frame = CGRectInset(frame, 10.0, 0.0)
             
             let newPageView = UIImageView(image: pageImages[page])
             newPageView.contentMode = .ScaleAspectFit
             newPageView.frame = frame
             imageScrollView.addSubview(newPageView)
-            
             pageViews[page] = newPageView
+            currentPage = page
+
+            
         }
     }
     
@@ -244,4 +237,42 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
         
     }
     
+    @IBAction func viewTapped(sender: AnyObject) {
+        var currentImage : UIImage = pageImages[index]
+        
+        let detailStoryboard = UIStoryboard(name: "DetailView", bundle: nil)
+        let largeImage = detailStoryboard.instantiateViewControllerWithIdentifier("largeImage") as! LargeImage
+        largeImage.imageFromDetailView = currentImage
+        self.presentViewController(largeImage, animated: true, completion: nil)
+    }
+    
 }
+
+class LargeImage: UIViewController{
+
+    var imageFromDetailView: UIImage?
+    @IBOutlet weak var image: UIImageView!
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        image.image = imageFromDetailView
+        image.contentMode = .ScaleAspectFit
+    }
+
+    @IBAction func backButtonPressed(sender: AnyObject) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
