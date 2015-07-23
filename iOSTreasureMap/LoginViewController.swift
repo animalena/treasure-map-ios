@@ -85,7 +85,6 @@ class LoginViewController: UIViewController, NSURLConnectionDataDelegate {
         
         if(self.loggedIn == true) {
             self.performSegueWithIdentifier("goToMap", sender: sender)
-           // LocationController().writingEnabled == true
         }
         
         task.resume()

@@ -10,11 +10,9 @@ import UIKit
 
 class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManagerDelegate{
     
-    //@IBOutlet weak var viewMap: GMSMapView!
     var viewMap: GMSMapView!
     var tappedPin: GMSMarker?
     var selectedLocation: Location?
-    @IBOutlet weak var toolbar: UINavigationItem!
     @IBOutlet weak var menuButton: UIBarButtonItem!
     
     var radius : Double = 3000
@@ -25,15 +23,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     
     var locationManager = CLLocationManager()
     var locationController : LocationController?
-    
+    var locations: [Location] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        var buttonImg = UIImage(named: "burgerMenu_small")
-        menuButton.setBackButtonBackgroundImage(buttonImg, forState: .Normal, barMetrics: .Default)
-        
-        
+           
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestWhenInUseAuthorization()
@@ -49,7 +43,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         viewMap.animateToZoom(12)
         viewMap.setMinZoom(10, maxZoom: 15)
         
-        //self.view.addSubview(viewMap)
+        self.view.addSubview(viewMap)
         viewMap.delegate = self
         
         self.view = viewMap
@@ -59,8 +53,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         marker.snippet = "This is my current location"
         marker.appearAnimation = kGMSMarkerAnimationPop
         marker.icon = GMSMarker.markerImageWithColor(UIColor.greenColor())
-        marker.map = viewMap
-        
         
     }
     
@@ -124,8 +116,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         var circleCenter = CLLocationCoordinate2DMake(marker.position.latitude, marker.position.longitude)
         var circle = GMSCircle(position: circleCenter, radius: radius)
         circle.strokeColor = UIColor.blueColor()
-        circle.fillColor = UIColor(red: 0, green: 0, blue: 0.5, alpha: 0.2)
-        //circle.map = viewMap;
+        circle.fillColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.2)
+        //circle.map = viewMap
     }
     
     func startConnection(){
@@ -146,7 +138,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     func connectionDidFinishLoading(connection: NSURLConnection!) {
         var err: NSError
         var data = NSData(contentsOfURL: locationEndpoint!)
-        var locations: [Location] = locationController!.getLocations()!
+        locations = locationController!.getLocations()!
         
         
         var circleCenter = CLLocationCoordinate2DMake(marker.position.latitude, marker.position.longitude)
@@ -155,7 +147,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         
         
         for(var x=0; x<locations.count; x++){
-            println("http://treasuremap-stage.herokuapp.com/api/locations/" + locations[x].id!)
             
             var locationLat = locations[x].coordinates?.valueForKey("latitude") as? CLLocationDegrees
             var locationLng = locations[x].coordinates?.valueForKey("longitude") as? CLLocationDegrees
@@ -226,6 +217,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     
     
     @IBAction func toggleSideMenu(sender: AnyObject){
+        //MenuViewController().locations = self.locations
+        
         toggleSideMenuView()
+        
     }
 }

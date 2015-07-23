@@ -12,6 +12,7 @@ import AssetsLibrary
 class ImageViewController: UIViewController, UIImagePickerControllerDelegate{
     
     
+    @IBOutlet weak var toolbar: UINavigationItem!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var descriptionBox: UITextField!
     //@IBOutlet weak var uploadButton: UIButton!
@@ -47,7 +48,7 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate{
             error: error) {
                 println("Creating 'upload' directory failed. Error: \(error)")
         }
-        
+        toolbar.title = location.details?.valueForKey("name") as? String
         //photoUploadProgress.hidden = true
         
     }

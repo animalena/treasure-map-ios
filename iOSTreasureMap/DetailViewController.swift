@@ -14,8 +14,7 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
     
     //navigation stuff
     @IBOutlet weak var pageScrollView: UIScrollView!
-    @IBOutlet weak var backButton: UIBarButtonItem!
-    @IBOutlet weak var toolbar: UINavigationItem!
+    //@IBOutlet weak var backButton: UIBarButtonItem!
     var rootViewController : MapViewController?
     @IBOutlet weak var detailScrollView: UIScrollView!
     
@@ -24,6 +23,7 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
     @IBOutlet weak var locationDescription: UITextView!
     var didTapPin: GMSMarker!
     var detailsFromRootView: Location!
+    
     
     //variables for the images
     @IBOutlet weak var imageScrollView: UIScrollView!
@@ -44,25 +44,29 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
 
         uploadPhotoButton.titleLabel?.text = "Upload Photos"
         uploadPhotoButton.titleLabel?.textColor = UIColor(red: 255, green: 255, blue: 255, alpha: 1)
-        
-        self.navigationItem.titleView?.center
         self.detailScrollView.contentSize = CGSizeMake(self.view.frame.size.width,self.view.frame.size.height)
         self.detailScrollView.scrollEnabled = true
+
         
         //self.view.bringSubviewToFront(navigationBar)
-        var street = detailsFromRootView.address?.valueForKey("street") as! String
-        var zip = detailsFromRootView.address?.valueForKey("zipcode") as! String
-        var city = detailsFromRootView.address?.valueForKey("city") as! String
+        var street = detailsFromRootView.address!.valueForKey("street") as! String
+        var zip = detailsFromRootView.address!.valueForKey("zipcode") as! String
+        var city = detailsFromRootView.address!.valueForKey("city") as! String
         var category = detailsFromRootView.category!.valueForKey("name") as! String
-        var description = detailsFromRootView.details?.valueForKey("description") as? String
+        var description = detailsFromRootView.details!.valueForKey("description") as? String
         //toolbar.topItem?.title = detailsFromRootView.details!.valueForKey("name") as? String
-        
         //locationDetails.font = UIFont(name: "STHeitiTC-Light", size: 12)
         locationDetails.text = "Address:" + "\n" +  "\(street)" + "\n" + "\(zip)" + "\n" + "\(city)"
         
         //locationDescription.font = UIFont(name: "STHeitiTC-Light", size: 12)
         locationDescription.text = "\(category)" + "\n" + "\(description)"
         locationDescription.editable = false
+        
+        //self.view.bringSubviewToFront(toolbar)
+       
+            
+            //detailsFromRootView.details!.valueForKey("name") as? String
+        
         
         if let photos = detailsFromRootView.details?.valueForKey("pictures") as? NSArray{
             for(var x = 0; x<photos.count; x++){
@@ -243,15 +247,17 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, UINavigation
         let detailStoryboard = UIStoryboard(name: "DetailView", bundle: nil)
         let largeImage = detailStoryboard.instantiateViewControllerWithIdentifier("largeImage") as! LargeImage
         largeImage.imageFromDetailView = currentImage
+//        largeImage.toolbar.title = detailsFromRootView.details!.valueForKey("name") as? String
         self.presentViewController(largeImage, animated: true, completion: nil)
     }
     
 }
 
-class LargeImage: UIViewController{
+class LargeImage: UINavigationController{
 
     var imageFromDetailView: UIImage?
     @IBOutlet weak var image: UIImageView!
+  
     
     
     override func viewDidLoad() {
