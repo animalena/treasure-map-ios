@@ -15,6 +15,7 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITextField
     lazy var data = NSMutableData()
     var locations: [Location]?
     var autocompleteLocations = [Location]()    
+
     var searchMap: GMSMapView!
     var marker = GMSMarker()
     
@@ -37,7 +38,8 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITextField
         // Google Maps
         var camera = GMSCameraPosition.cameraWithLatitude(52.51631,
             longitude: 13.40784, zoom: 10)
-        searchMap = GMSMapView.mapWithFrame(CGRectZero, camera: camera)
+        let mapRect = CGRectMake(0, 0, self.view.frame.size.width, (self.view.frame.size.height - self.searchbar.frame.height))
+        searchMap = GMSMapView.mapWithFrame(mapRect, camera: camera)
         //searchMap?.settings.myLocationButton = true
         //searchMap?.settings.compassButton = true
         //searchMap?.myLocationEnabled = true
@@ -46,9 +48,9 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITextField
         
         //self.view.addSubview(searchMap)
         searchMap.delegate = self
-        
-        self.view.addSubview(searchMap!)
-        self.view.bringSubviewToFront(searchbar)
+        self.view.addSubview(searchMap)
+        //self.view = searchMap
+        //self.view.bringSubviewToFront(searchbar)
     }
     
     @IBAction func backButtonPressed(sender: AnyObject) {

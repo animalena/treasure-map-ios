@@ -8,6 +8,7 @@
         <scene sceneID="2K2-t7-JwC">
             <objects>
                 <navigationController storyboardIdentifier="NavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="dC6-oa-kbQ" customClass="NavigationController" customModule="iOSTreasureMap" customModuleProvider="target" sceneMemberID="viewController">
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="MGt-Ui-8NB">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>

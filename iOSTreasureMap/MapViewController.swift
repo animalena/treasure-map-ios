@@ -43,7 +43,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         viewMap.animateToZoom(12)
         viewMap.setMinZoom(10, maxZoom: 15)
         
-        self.view.addSubview(viewMap)
+        //self.view.addSubview(viewMap)
         viewMap.delegate = self
         
         self.view = viewMap
