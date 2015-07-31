@@ -10,6 +10,7 @@ class NavigationController: ENSideMenuNavigationController, ENSideMenuDelegate {
         //sideMenu?.delegate = self //optional
         sideMenu?.menuWidth = 300.0 // optional, default is 160
         sideMenu?.bouncingEnabled = false
+        navigationBar.backgroundColor = UIColor(red: 33, green: 194, blue: 184, alpha: 1)
         
         // make navigation bar showing over side menu
         view.bringSubviewToFront(navigationBar)

@@ -19,7 +19,7 @@ public class ENSideMenuNavigationController: UINavigationController, ENSideMenuP
         super.viewDidLoad()
     }
     
-    public init( menuViewController: UIViewController, contentViewController: UIViewController?) {
+    public init(menuViewController: UIViewController, contentViewController: UIViewController?) {
         super.init(nibName: nil, bundle: nil)
         
         if (contentViewController != nil) {
@@ -42,6 +42,7 @@ public class ENSideMenuNavigationController: UINavigationController, ENSideMenuP
     // MARK: - Navigation
     public func setContentViewController(contentViewController: UIViewController) {
         self.sideMenu?.toggleMenu()
+        
         switch sideMenuAnimationType {
         case .None:
             self.viewControllers = [contentViewController]
@@ -49,6 +50,7 @@ public class ENSideMenuNavigationController: UINavigationController, ENSideMenuP
         default:
             contentViewController.navigationItem.hidesBackButton = true
             self.setViewControllers([contentViewController], animated: true)
+
             break
         }
         

@@ -9,17 +9,47 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate , NSURLConnectionDataDelegate {
     
     var window: UIWindow?
-    
+    let cognitoAccountId = "treasure-map"
+    let cognitoIdentityPoolId = "eu-west-1:5f5f3ce2-9d1e-4c70-ada7-0ebcfc08c16c"
+    //let cognitoUnauthRoleArn = "xxxxxxxxxxxxxxxxx"
+    let cognitoAuthRoleArn = "xxxxxxxxxxxxxxxxx"
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+        
         //API Client-Key for Google Maps
         GMSServices.provideAPIKey("AIzaSyC49fkrQRd5yDgRszSHSga9KRfOmussA9g")
-//        application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: UIUserNotificationType.Sound |UIUserNotificationType.Alert |UIUserNotificationType.Badge, categories: nil)
-//        return true
+        
+        let user:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        let loggedIn:Int = user.integerForKey("loggedIn")as Int
+        
+        println(loggedIn)
+        
+        if (loggedIn != 1) {
+            println("user is not logged in")
+            
+            // show the login view straight away if user is not logged in
+            let storyboard:UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+            // navigation controller needs to be initial view controller in order to have the navigation bar
+            let navigationController:UINavigationController = storyboard.instantiateInitialViewController() as! UINavigationController
+            let rootViewController:UIViewController = storyboard.instantiateViewControllerWithIdentifier("loginVC") as! UIViewController
+            navigationController.viewControllers = [rootViewController]
+            self.window?.rootViewController = navigationController
+            
+        }
+        
+        //call AWS Services.
+        //Code from https://docs.aws.amazon.com/mobile/sdkforios/developerguide/setup.html#
+        let credentialsProvider = AWSCognitoCredentialsProvider(
+            regionType: AWSRegionType.EUWest1, identityPoolId: cognitoIdentityPoolId)
+        
+        let defaultServiceConfiguration = AWSServiceConfiguration(
+            region: AWSRegionType.EUCentral1, credentialsProvider: credentialsProvider)
+        AWSServiceManager.defaultServiceManager().defaultServiceConfiguration = defaultServiceConfiguration
+        
+        return true
     }
     
     func applicationWillResignActive(application: UIApplication) {
@@ -39,6 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
+    
     
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
