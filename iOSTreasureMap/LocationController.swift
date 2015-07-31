@@ -49,14 +49,7 @@ class LocationController: NSObject{
                         }
                     }
                     if let details = location["details"] as? NSDictionary{
-                        if let category = details["category"] as? NSDictionary{
-                            if let imgUrl = category["imgUrl"] as? String{
-                                categoryDict["imgUrl"] = imgUrl
-                            }
-                            if let name = category["name"] as? String{
-                                categoryDict["name"] = name
-                            }
-                        }
+
                         detailDict["category"] = categoryDict
                         if let description = details["description"] as? String{
                             detailDict["description"] = description
@@ -66,6 +59,14 @@ class LocationController: NSObject{
                         }
                         if let name = details["name"] as? String{
                             detailDict["name"] = name
+                        }
+                        if let category = details["category"] as? NSDictionary{
+                            if let imgUrl = category["imgUrl"] as? String{
+                                categoryDict["imgUrl"] = imgUrl
+                            }
+                            if let name = category["name"] as? String{
+                                categoryDict["name"] = name
+                            }
                         }
                         if let pictures = details["pictures"] as? NSMutableArray{
                             detailDict["pictures"] = pictures
@@ -105,6 +106,17 @@ class LocationController: NSObject{
         return validLocation
     }
     
+    func convertJSONValidNewLocation(location: NewLocation) -> NSDictionary{
+        var validLocation = [String: AnyObject]()
+        
+        validLocation["address"] = location.address
+        validLocation["coordinates"] = location.coordinates
+        validLocation["details"] = location.details
+        
+        return validLocation
+    
+    }
+    
     func deepCopyLocation(location: Location, newValue: AnyObject?) -> Location{
         var addressDict = [String: String]()
         var detailDict = [String: AnyObject]()
@@ -140,15 +152,33 @@ class LocationController: NSObject{
         categoryDict["imgUrl"] = imgUrl
         categoryDict["name"] = categoryName
         
-        detailDict["category"] = categoryDict
         detailDict["description"] = description
         detailDict["duration"] = duration
-        detailDict["name"] = name
+        detailDict["name"] = name        
+        detailDict["category"] = categoryDict
         detailDict["pictures"] = pictures
         
         var locationCopy = Location(address: addressDict, coordinates: coordinatesDict, details: detailDict, category: categoryDict, id: location.id)
         
         return locationCopy
+    }
+    
+    func saveLocation(location: NewLocation){
+        var configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        var session = NSURLSession(configuration: configuration)
+        var request = NSMutableURLRequest(URL: locationEndpoint)
+        var responseError: NSError?
+        var response: NSURLResponse?
+
+        
+        var validLocation = convertJSONValidNewLocation(location)
+        var error: NSError?
+        let body = NSJSONSerialization.dataWithJSONObject(validLocation, options: nil, error: &error)!
+        request.HTTPMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.HTTPBody = body
+        NSURLConnection.sendSynchronousRequest(request, returningResponse: &response, error: &responseError)
+        println("Hallo")
     }
     
     func writeJSONData(location: Location, content: String, writeTo: String){
@@ -171,9 +201,9 @@ class LocationController: NSObject{
         let body = NSJSONSerialization.dataWithJSONObject(validLocation, options: nil, error: &error)!
         request.HTTPMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.HTTPBody = body
+         request.HTTPBody = body
         NSURLConnection.sendSynchronousRequest(request, returningResponse: &response, error: &responseError)
-
+        println("done")
     }
     
 }

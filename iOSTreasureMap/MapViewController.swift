@@ -13,7 +13,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     var viewMap: GMSMapView!
     var tappedPin: GMSMarker?
     var selectedLocation: Location?
-    @IBOutlet weak var menuButton: UIBarButtonItem!
+
     
     var radius : Double = 3000
     var marker = GMSMarker()
@@ -33,10 +33,14 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         self.locationManager.requestWhenInUseAuthorization()
         self.locationManager.startUpdatingLocation()
         
+        
+        
         // Google Maps
         var camera = GMSCameraPosition.cameraWithLatitude(52.51631,
             longitude: 13.40784, zoom: 10)
-        viewMap = GMSMapView.mapWithFrame(CGRectZero, camera: camera)
+//        viewMap = GMSMapView.mapWithFrame(CGRectZero, camera: camera)
+        let mapRect = CGRectMake(0, 0, self.view.frame.size.width, (self.view.frame.size.height - 50))
+        viewMap = GMSMapView.mapWithFrame(mapRect, camera: camera)
         viewMap?.settings.myLocationButton = true
         viewMap?.settings.compassButton = true
         viewMap?.myLocationEnabled = true
@@ -152,7 +156,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
             var locationLng = locations[x].coordinates?.valueForKey("longitude") as? CLLocationDegrees
             var locationPosition = CLLocationCoordinate2DMake(locationLat!, locationLng!)
             var locationName = locations[x].details?.valueForKey("name") as! String
-            println("Location Name in Map View: \(locationName)")
             var locationDuration = locations[x].details?.valueForKey("duration") as! String
             var locationCategory = locations[x].category?.valueForKey("name") as! String
             var locationMarker = GMSMarker(position: locationPosition)
@@ -176,7 +179,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
             
             // only show markers if they are within the radius
             if (dist < radius){
-                println("Radius: \(radius)")
+                //println("Radius: \(radius)")
                 locationMarker.title = "Location: \(locationName)"
                 locationMarker.snippet = "Duration in Hours: \(locationDuration)" + "\n" +
                 "Category: \(locationCategory)"
@@ -198,10 +201,10 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     func mapView(mapView: GMSMapView!, didTapInfoWindowOfMarker marker: GMSMarker!) {
         //viewMap.delegate = self
         tappedPin = marker
-        println("tappedPin 2: \(tappedPin?.title)")
         //erstellt eine Instanz des entsprechenden Storyboards
         let detailStoryboard = UIStoryboard(name: "DetailView", bundle: nil)
         //innerhalb dieses Storyboards wird der View Controller instanziiert (dem View Controller im Storyboard eine ID geben!)
+        
         let detailView = detailStoryboard.instantiateViewControllerWithIdentifier("DetailViewID") as! DetailViewController
         //Wie soll der nächste View erscheinen?
         detailView.modalTransitionStyle = UIModalTransitionStyle.CoverVertical
@@ -213,6 +216,17 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         detailView.rootViewController = self
         //der eigentliche Aufruf des View Controllers
         self.presentViewController(detailView, animated: true, completion: nil)
+    }
+    
+    @IBAction func logOut(sender: AnyObject) {
+
+        println("logging out")
+        
+        var user:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        user.setInteger(0, forKey: "loggedIn")
+        user.synchronize()
+        
+        self.performSegueWithIdentifier("goToLogin", sender: self)
     }
     
     

@@ -8,166 +8,131 @@
 
 import UIKit
 
-class LoginViewController: UIViewController, NSURLConnectionDataDelegate {
+class LoginViewController: UIViewController, UITextFieldDelegate {
     
     var loggedIn = false;
     
-    @IBOutlet weak var emailTextfield: UITextField!
-    @IBOutlet weak var pwTextfield: UITextField!
+    @IBOutlet var emailTextfield : UITextField!
+    @IBOutlet var pwTextfield : UITextField!
     
-    @IBOutlet weak var loginButton: UIButton!
-    
-    @IBAction func login(sender: AnyObject) {
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        if (emailTextfield.text == "" || pwTextfield.text == "") {
-            var alert = UIAlertView()
-            alert.title = "You must enter both email address and password!"
-            alert.addButtonWithTitle("Ok, let's try again")
-            alert.show()
+        // hides the back button of the navigation bar
+        var barBack = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain, target: self, action: nil)
+        self.navigationItem.leftBarButtonItem = barBack
+    }
+    
+//    func saveApiTokenInKeychain(tokenDict:NSDictionary) {
+//        // Store API AuthToken and AuthToken expiry date in KeyChain
+//        tokenDict.enumerateKeysAndObjectsUsingBlock({ (dictKey, dictObj, stopBool) -> Void in
+//            var myKey = dictKey as! String
+//            var myObj = dictObj as! String
+//            
+//            if myKey == "api_authtoken" {
+//                Keychain.setPassword(myObj, account: "Auth_Token", service: "KeyChainService")
+//            }
+//            
+//            if myKey == "authtoken_expiry" {
+//                Keychain.setPassword(myObj, account: "Auth_Token_Expiry", service: "KeyChainService")
+//            }
+//        })
+//        
+//        self.dismissViewControllerAnimated(true, completion: nil)
+//    }
+    
+    @IBAction func loginTapped(sender: AnyObject) {
+        
+        var email:String = emailTextfield.text as String
+        var password:String = pwTextfield.text as String
+        
+        // check if both email and password have been entered
+        if (email.isEmpty) || (password.isEmpty) {
+            var alert = UIAlertController(title: "Forgot something?", message: "Please enter both email address and password.", preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
+            
+        } else if email.rangeOfString("@") == nil{
+            var alert = UIAlertController(title: "Forgot something?", message: "Please enter a valid email address.", preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
+            
             return;
         }
         
         emailTextfield.resignFirstResponder()
         pwTextfield.resignFirstResponder()
         
-        var parameters = ["email": emailTextfield.text, "password": pwTextfield.text] as Dictionary<String, String>
-        
-        let url = NSURL(string: "http://treasuremap-stage.herokuapp.com/auth/local")
+        var defaults: NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        defaults.setObject(email, forKey: "email")
+        defaults.setObject(password, forKey: "password")
         
         var session = NSURLSession.sharedSession()
+        
+        // NSURL is an object that contains the URL
+        let url = NSURL(string: "http://treasuremap-stage.herokuapp.com/auth/local")
         
         let request = NSMutableURLRequest(URL: url!)
         request.HTTPMethod = "POST"
         
-        var err: NSError?
-        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(parameters, options: nil, error: &err)
+        var error: NSError?
+        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(["email": email, "password": password] as Dictionary<String, String>, options: nil, error: &error)
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
         
         var task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
-            println("Response: \(response)")
-            var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
-            println("Body: \(strData)")
+            println("Response header: \(response)")
+            var responseBody = NSString(data: data, encoding: NSUTF8StringEncoding)
+            //println("Body: \(strData)")
             var err: NSError?
-            var json = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &err) as? NSDictionary
             
-            var string = ("Body: \(strData)")
-            if string.rangeOfString("token") != nil{
+            let json = NSJSONSerialization.JSONObjectWithData(data,
+                options: NSJSONReadingOptions.AllowFragments, error:&err) as! NSDictionary
+            
+            let token = (json as NSDictionary)["token"] as! String
+            
+            //println("Session token: \(token)")
+            
+            let res = response as! NSHTTPURLResponse!;
+            
+            var string = ("Response body: \(responseBody)")
+            
+            if res.statusCode == 401 {
+                var alert = UIAlertController(title: "Sign in failed.", message: "You have either entered an incorrect email address password combination or you are not a registered user yet. Please try again or sign up.", preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+                self.presentViewController(alert, animated: true, completion: nil)
+                
+            } else if (res.statusCode >= 200 && res.statusCode < 300) {
+                var user:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+                user.setInteger(1, forKey: "loggedIn")
+                let UserIsLoggedIn:Int = user.integerForKey("loggedIn") as Int
+                println(UserIsLoggedIn)
+                user.synchronize()
+                
                 self.loggedIn = true;
+                
             } else {
-                println("not regisered!")
-                let alert = UIAlertView()
-                alert.title = "This email is not registered."
-                alert.addButtonWithTitle("Try another email.")
-                alert.show()
+                var alert = UIAlertController(title: "Sign in failed.", message: "Unknown Error. Please try again later.", preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+                self.presentViewController(alert, animated: true, completion: nil)
             }
-            
-            
-            if(err != nil) {
-                println(err!.localizedDescription)
-                let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
-                println("Error could not parse JSON: '\(jsonStr)'")
-            }
-            else {
-                if let parseJSON = json {
-                    var success = parseJSON["success"] as? Int
-                    //self.loggedIn = true;
-                }
-                else {
-                    let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
-                    println("Error could not parse JSON: \(jsonStr)")
-                }
-            }
-            
             
         })
         
         if(self.loggedIn == true) {
-            self.performSegueWithIdentifier("goToMap", sender: sender)
+            self.changeView()
         }
         
         task.resume()
     }
     
-    /*
-    func saveApiTokenInKeychain(tokenDict:NSDictionary) {
-    // Store API AuthToken and AuthToken expiry date in KeyChain
-    tokenDict.enumerateKeysAndObjectsUsingBlock({ (dictKey, dictObj, stopBool) -> Void in
-    var myKey = dictKey as! String
-    var myObj = dictObj as! String
-    
-    if myKey == "api_authtoken" {
-    Keychain.setPassword(myObj, account: "Auth_Token", service: "KeyChainService")
+    func changeView() {
+        let mapView = self.storyboard!.instantiateViewControllerWithIdentifier("MapViewController") as! UIViewController
+        self.navigationController!.pushViewController(mapView, animated: true)
     }
     
-    if myKey == "authtoken_expiry" {
-    Keychain.setPassword(myObj, account: "Auth_Token_Expiry", service: "KeyChainService")
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
     }
-    })
-    
-    self.dismissViewControllerAnimated(true, completion: nil)
-    }
-    */
-    
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        //performSegueWithIdentifier("goToMap", sender: self)
-        
-        if self.emailTextfield.isFirstResponder(){
-            self.emailTextfield.resignFirstResponder()
-        }
-        
-        if self.pwTextfield.isFirstResponder() {
-            self.pwTextfield.becomeFirstResponder()
-        }
-        
-        
-        
-        if(loggedIn == true) {
-            println("logged in")
-        } else {
-            println("not logged in")
-        }
-        
-    }
-    
-    
-    
-    
-    //logout request.deleteValue
-    
-    /*
-    var json: NSArray = (NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: nil) as! NSArray)
-    var email = [String: String]()
-    var password = [String: String]()
-    
-    var local : NSJSONSerialization.JSONObjectWithData =
-    
-    var url : String = "http://treasuremap-stage.herokuapp.com/auth/" + local
-    var request : NSMutableURLRequest = NSMutableURLRequest()
-    request.URL = NSURL(string: url)
-    request.HTTPMethod = "POST"
-    
-    //asynchronous request
-    NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue(), completionHandler:{ (response:NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-    var error: AutoreleasingUnsafeMutablePointer<NSError?> = nil
-    let jsonResult: NSArray! = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: error) as? NSArray
-    
-    if (jsonResult != nil) {
-    println(jsonResult)
-    } else {
-    println("no results")
-    
-    }
-    
-    })
-    
-    }
-    */
-    
     
 }

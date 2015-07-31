@@ -44,7 +44,7 @@ class MenuViewController: UITableViewController{
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Return the number of rows in the section.
-        return 4
+        return 10
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -54,7 +54,7 @@ class MenuViewController: UITableViewController{
         if (cell == nil) {
             cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "CELL")
             cell!.backgroundColor = UIColor.clearColor()
-            cell!.textLabel?.textColor = UIColor(red: 33, green: 194, blue: 184, alpha: 1)       //darkGreyColor
+            cell!.textLabel?.textColor = UIColor.darkGrayColor()      //darkGreyColor
             let selectedBackgroundView = UIView(frame: CGRectMake(0, 0, cell!.frame.size.width, cell!.frame.size.height))
             selectedBackgroundView.backgroundColor = UIColor.grayColor().colorWithAlphaComponent(0.2)
             cell!.selectedBackgroundView = selectedBackgroundView
@@ -64,10 +64,12 @@ class MenuViewController: UITableViewController{
         case 0:
             cell!.textLabel?.text = "Locations nearby"
         case 1:
-            cell!.textLabel?.text = "Add a Location"
-        
-        case 2:
-            cell!.textLabel?.text = "Find a Location"
+           // cell!.textLabel?.text = "Add a Location"
+         cell!.textLabel?.text = "Find a Location"
+        //case 2:
+           
+        case 10:
+            cell!.textLabel?.text = "Log Out"
         default:
              cell!.textLabel?.text = " "
         }
@@ -96,30 +98,60 @@ class MenuViewController: UITableViewController{
             sideMenuController()?.setContentViewController(destViewController)
             break
         case 1:
-            destViewController = mainStoryboard.instantiateViewControllerWithIdentifier("MapViewController")as! MapViewController
-            sideMenuController()?.setContentViewController(destViewController)
-            break
-        case 2:
-
             let searchStoryboard: UIStoryboard = UIStoryboard(name: "SearchLocations", bundle: nil)
             var searchViewController = searchStoryboard.instantiateViewControllerWithIdentifier("startSearch") as! SearchViewController
-                searchViewController.navigationItem.title = "Find a Location"
+            searchViewController.navigationItem.title = "Find a Location"
             var menuButton = UIBarButtonItem()
             let buttonImg = UIImage(named: "burgerMenu")
             menuButton.setBackgroundImage(buttonImg, forState: .Normal, barMetrics: .Default)
             self.navigationItem.setLeftBarButtonItem(menuButton, animated: false)
             
-                //searchViewController.navigationItem.leftBarButtonItem = menuButton
+            //searchViewController.navigationItem.leftBarButtonItem = menuButton
             
- 
+            
             //presentViewController(searchViewController, animated: false, completion: nil)
             sideMenuController()?.setContentViewController(searchViewController)
-//            searchViewController.navigationItem.title = "Find a Location"
+            //            searchViewController.navigationItem.title = "Find a Location"
+            //            var menuButton = UIBarButtonItem()
+            //            let buttonImg = UIImage(named: "burgerMenu")
+            //            menuButton.setBackgroundImage(buttonImg, forState: .Normal, barMetrics: .Default)
+            //            searchViewController.navigationItem.setLeftBarButtonItem(menuButton, animated: false)
+            break
+//            let newLocationStoryboard: UIStoryboard = UIStoryboard(name: "AddNewLocation", bundle: nil)
+//            var newLocationViewController = newLocationStoryboard.instantiateViewControllerWithIdentifier("NewLocationController") as! NewLocationController
+//            newLocationViewController.navigationItem.title = "Add a Location"
 //            var menuButton = UIBarButtonItem()
 //            let buttonImg = UIImage(named: "burgerMenu")
 //            menuButton.setBackgroundImage(buttonImg, forState: .Normal, barMetrics: .Default)
-//            searchViewController.navigationItem.setLeftBarButtonItem(menuButton, animated: false)
-                        break
+//            self.navigationItem.setLeftBarButtonItem(menuButton, animated: false)
+//            
+//            //searchViewController.navigationItem.leftBarButtonItem = menuButton
+//            
+//            
+//            //presentViewController(searchViewController, animated: false, completion: nil)
+//            sideMenuController()?.setContentViewController(newLocationViewController)
+//            break
+//        case 2:
+
+//            let searchStoryboard: UIStoryboard = UIStoryboard(name: "SearchLocations", bundle: nil)
+//            var searchViewController = searchStoryboard.instantiateViewControllerWithIdentifier("startSearch") as! SearchViewController
+//                searchViewController.navigationItem.title = "Find a Location"
+//            var menuButton = UIBarButtonItem()
+//            let buttonImg = UIImage(named: "burgerMenu")
+//            menuButton.setBackgroundImage(buttonImg, forState: .Normal, barMetrics: .Default)
+//            self.navigationItem.setLeftBarButtonItem(menuButton, animated: false)
+//            
+//                //searchViewController.navigationItem.leftBarButtonItem = menuButton
+//            
+// 
+//            //presentViewController(searchViewController, animated: false, completion: nil)
+//            sideMenuController()?.setContentViewController(searchViewController)
+////            searchViewController.navigationItem.title = "Find a Location"
+////            var menuButton = UIBarButtonItem()
+////            let buttonImg = UIImage(named: "burgerMenu")
+////            menuButton.setBackgroundImage(buttonImg, forState: .Normal, barMetrics: .Default)
+////            searchViewController.navigationItem.setLeftBarButtonItem(menuButton, animated: false)
+//                        break
         default:
             destViewController = mainStoryboard.instantiateViewControllerWithIdentifier("ViewController4") as! UIViewController
             break

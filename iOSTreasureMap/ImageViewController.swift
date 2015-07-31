@@ -14,8 +14,9 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate{
     
     @IBOutlet weak var toolbar: UINavigationItem!
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var descriptionBox: UITextField!
-    //@IBOutlet weak var uploadButton: UIButton!
+    @IBOutlet weak var uploadDescription: UILabel!
+
+    @IBOutlet weak var inactiveView: UIView!
     
     lazy var data = NSMutableData()
     let locationEndpoint = NSURL(string: "http://treasuremap-stage.herokuapp.com/api/locations")
@@ -48,9 +49,8 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate{
             error: error) {
                 println("Creating 'upload' directory failed. Error: \(error)")
         }
-        toolbar.title = location.details?.valueForKey("name") as? String
-        //photoUploadProgress.hidden = true
-        
+        //toolbar.title = location.details?.valueForKey("name") as? String
+        uploadDescription.text = location.details?.valueForKey("name") as? String
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -61,6 +61,8 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate{
     @IBAction func backButtonPressed(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    
     
     @IBAction func uploadButtonPressed(sender: AnyObject) {
         //for (index, imageDictionary) in enumerate(photoData!) {
@@ -167,8 +169,7 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate{
         }
         return nil
     }
-    
-    
+
     func updateProgressView(bytesSent:Int64, totalBytesSent:Int64,  totalBytesExpectedToSend:Int64)
     {
         self.view.addSubview(photoUploadProgress)
